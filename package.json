@@ -1,0 +1,17 @@
+{
+  "name": "AMDBuilder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "AMDBuilder.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node AMDBuilder.js"
+  },
+  "engine": {
+    "node": ">= 0.8"
+  },
+  "author": "Grzesiu Szeliga",
+  "license": "ISC",
+  "dependencies": {
+  }
+}
