@@ -1,0 +1,7 @@
+/static/build
+/node_modules
+/nbproject/private/
+.project
+/.idea/
+*.orig
+.reports
