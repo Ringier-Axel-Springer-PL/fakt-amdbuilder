@@ -10,8 +10,12 @@
   "engine": {
     "node": ">= 0.8"
   },
-  "author": "Grzesiu Szeliga",
+  "author": {
+    "name": "Grzesiu Szeliga"
+  },
   "license": "ISC",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
+    "through2": "^2.0.3"
   }
 }
