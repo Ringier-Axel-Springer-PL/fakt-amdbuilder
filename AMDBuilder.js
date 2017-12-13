@@ -1,89 +1,93 @@
-
+var through2 = require('through2');
 /* global exports, __dirname */
 
 
 //main();
 
 exports.processFile = processFile;
-
+exports.gulpTask = gulpTask;
 
 function processFile(file_in, callback) {
 
     console.log('AMD BUILDER', file_in);
 
-    showLog("");
-    showLog("process file : " + file_in);
-
+    showLog('');
+    showLog('process file : ' + file_in);
 
     createMap(file_in, function(mainModule, map) {
 
         var lista = getListModules(map);
 
-        getOutTemplate(function(configOutTemplate){
+        getOutTemplate(function(configOutTemplate) {
             var outStr = makeStringOut(configOutTemplate, mainModule, map, lista);
             callback(outStr);
 
         });
     });
 }
+function proccesStream(fileStream,encode,callback) {
+    // fileStream.contents.toString()
+    console.log(fileStream.contents.toString());
+    // callback(null,'test');
+    callback(null,fileStream);
 
+}
+
+function gulpTask() {
+    return through2.obj(proccesStream);
+}
 
 function showLog(message) {
-    console.info("AMDBuilder: " + message);
+    console.info('AMDBuilder: ' + message);
 }
-
 
 function getGreenColor(message) {
-    return "\x1B[32m" + message + "\x1B[39m";
+    return '\x1B[32m' + message + '\x1B[39m';
 }
 
-
 function getRedColor(message) {
-    return "\x1B[31m" + message + "\x1B[39m"
+    return '\x1B[31m' + message + '\x1B[39m';
 }
 
 
 function createMap(file_in, callback) {
 
-    var isExec      = false;
+    var isExec = false;
 
-    var pathModule  = require("path");
-    var rootPath    = pathModule.dirname(file_in);
-    var rootNameArr = ["."].concat(pathModule.basename(file_in, ".js").split("/"));
+    var pathModule = require('path');
+    var rootPath = pathModule.dirname(file_in);
+    var rootNameArr = ['.'].concat(pathModule.basename(file_in, '.js').split('/'));
 
-
-
-    var rootModule      = createModule(rootPath, rootNameArr);
-    var mainModuleName  = rootNameArr.join("/");                     //"./" +
-    //mapa - ĹcieĹźka do moduĹu odwzorowana na obiekt reprezentujÄcy ten moduĹ
+    var rootModule = createModule(rootPath, rootNameArr);
+    var mainModuleName = rootNameArr.join('/');                     //"./" +
+    //mapa - ścieżka do modułu odwzorowana na obiekt reprezentujący ten moduł
     var map = {};
     map[mainModuleName] = rootModule;
 
 
     rootModule.getDeps(loadDeps);
 
+    function loadDeps(deps) {
 
-    function loadDeps(deps){
-
-        for (var i=0; i < deps.length; i++) {
+        for (var i = 0; i < deps.length; i++) {
             processModuleList(deps[i]);
         }
 
-        //inicjuj wczytywanie zaleĹźnych moduĹĂłw, ktĂłre nie zostaĹy zainicjowane
+        //inicjuj wczytywanie zależnych modułów, które nie zostały zainicjowane
 
         refreshState();
 
-        function processModuleList(depsName){
+        function processModuleList(depsName) {
 
             if (isDepsInternal(depsName) === false) {
                 return;
             }
 
-            if (typeof(map[depsName]) !== "undefined") {
+            if (typeof(map[depsName]) !== 'undefined') {
                 return;
             }
 
-            var mod = createModule(rootPath, depsName.split("/"));
+            var mod = createModule(rootPath, depsName.split('/'));
             map[depsName] = mod;
             mod.getDeps(loadDeps);
         }
