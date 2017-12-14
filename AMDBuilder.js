@@ -1,7 +1,6 @@
 var through2 = require('through2');
 /* global exports, __dirname */
 
-
 //main();
 
 exports.processFile = processFile;
@@ -25,11 +24,12 @@ function processFile(file_in, callback) {
         });
     });
 }
-function proccesStream(fileStream,encode,callback) {
+
+function proccesStream(fileStream, encode, callback) {
     // fileStream.contents.toString()
     console.log(fileStream.contents.toString());
     // callback(null,'test');
-    callback(null,fileStream);
+    callback(null, fileStream);
 
 }
 
@@ -49,7 +49,6 @@ function getRedColor(message) {
     return '\x1B[31m' + message + '\x1B[39m';
 }
 
-
 function createMap(file_in, callback) {
 
     var isExec = false;
@@ -63,7 +62,6 @@ function createMap(file_in, callback) {
     //mapa - ścieżka do modułu odwzorowana na obiekt reprezentujący ten moduł
     var map = {};
     map[mainModuleName] = rootModule;
-
 
     rootModule.getDeps(loadDeps);
 
@@ -93,7 +91,6 @@ function createMap(file_in, callback) {
         }
     }
 
-
     function refreshState() {
 
         for (var prop in map) {
@@ -109,53 +106,51 @@ function createMap(file_in, callback) {
     }
 }
 
-
-
 /*
-    root - gĹĂłwny katalog wzglÄdem ktĂłrego okreĹlane sÄ zaleĹźnoĹci
-    path - tablica ze stringami - okreĹlajÄca poĹoĹźenie moduĹu
-    callback - funkcja zwrotna uruchamiana w momencie gdy moduĹ zostaĹ zainicjowany
+    root - główny katalog względem którego określane są zależności
+    path - tablica ze stringami - określająca położenie modułu
+    callback - funkcja zwrotna uruchamiana w momencie gdy moduł został zainicjowany
 */
 
 function createModule(root, path) {
 
-    var depsSave    = null;
+    var depsSave = null;
     var contentSave = null;
-    var query       = queryCallback();
+    var query = queryCallback();
 
-    readContent(root, path, function(content){
-        //zawiera tablicÄ z zaleĹźnoĹciami
-        //zaleĹźnoĹc ["ccc/sdas/dsada", "./asdasda"]
+    readContent(root, path, function(content) {
+        //zawiera tablicę z zależnościami
+        //zależnośc ["ccc/sdas/dsada", "./asdasda"]
         var deps = readDeps(path, content);
 
-        //testuje poprawnoĹÄ zdefiniowanych zaleĹźnoĹci
+        //testuje poprawność zdefiniowanych zależności
         testDeps(deps);
 
-        depsSave    = deps;
+        depsSave = deps;
         contentSave = content;
 
-        //wyĹlij informacjÄ o zaleĹźnoĹciach do oczekujÄcych callbackĂłw
+        //wyślij informację o zależnościach do oczekujących callbacków
         query.exec({
-            deps    : deps,
-            content : content
+            deps: deps,
+            content: content
         });
 
     });
 
     return {
-        getDeps             : getDeps,
-        getContent          : getContent,
-        isExec              : query.isExec,
-        getDepInnerSync     : getDepInnerSync,
-        getDepExtSync       : getDepExtSync,
-        getPathBasenameSync : getPathBasenameSync,
-        getPathDirSync      : getPathDirSync,
-        getContentSync      : getContentSync
+        getDeps: getDeps,
+        getContent: getContent,
+        isExec: query.isExec,
+        getDepInnerSync: getDepInnerSync,
+        getDepExtSync: getDepExtSync,
+        getPathBasenameSync: getPathBasenameSync,
+        getPathDirSync: getPathDirSync,
+        getContentSync: getContentSync
     };
 
     function getDeps(callback) {
 
-        query.add(function(detail){
+        query.add(function(detail) {
 
             callback(makeCopyArray(detail.deps));
         });
@@ -163,7 +158,7 @@ function createModule(root, path) {
 
     function getContent(callback) {
 
-        query.add(function(detail){
+        query.add(function(detail) {
 
             callback(detail.content);
         });
@@ -172,12 +167,12 @@ function createModule(root, path) {
     function getDepInnerSync() {
 
         if (Array.isArray(depsSave) === false) {
-            throw Error("expected Array");
+            throw Error('expected Array');
         }
 
         var out = {};
 
-        for (var i=0; i<depsSave.length; i++) {
+        for (var i = 0; i < depsSave.length; i++) {
 
             if (isDepsInternal(depsSave[i])) {
                 out[depsSave[i]] = true;
@@ -187,16 +182,15 @@ function createModule(root, path) {
         return out;
     }
 
-
     function getDepExtSync() {
 
         if (Array.isArray(depsSave) === false) {
-            throw Error("expected Array");
+            throw Error('expected Array');
         }
 
         var out = {};
 
-        for (var i=0; i<depsSave.length; i++) {
+        for (var i = 0; i < depsSave.length; i++) {
 
             if (isDepsInternal(depsSave[i]) === false) {
                 out[depsSave[i]] = true;
@@ -206,13 +200,12 @@ function createModule(root, path) {
         return out;
     }
 
-
-    function getPathBasenameSync(){
+    function getPathBasenameSync() {
 
         var out = makeCopyArray(path);
 
         if (out.length < 2) {
-            throw Error("expected two arguments");
+            throw Error('expected two arguments');
         }
 
         return out.pop();
@@ -223,18 +216,18 @@ function createModule(root, path) {
         var out = makeCopyArray(path);
 
         if (out.length < 2) {
-            throw Error("expected two arguments");
+            throw Error('expected two arguments');
         }
 
         out.pop();
 
-        return out.join("/");
+        return out.join('/');
     }
 
     function getContentSync() {
 
         if (contentSave === null) {
-            throw Error("expected data");
+            throw Error('expected data');
         } else {
             return contentSave;
         }
@@ -242,24 +235,22 @@ function createModule(root, path) {
 
 }
 
-
 function makeCopyArray(list) {
 
     var out = [];
 
-    for (var i=0; i < list.length; i++) {
+    for (var i = 0; i < list.length; i++) {
         out.push(list[i]);
     }
 
     return out;
 }
 
-
 function testDeps(deps) {
 
-    //TODO - testuje zaleĹźnoĹci
-    //czy siÄ nie dublujÄ
-    //czy nie sÄ jakoĹ dziwnie okreĹlone ...
+    //TODO - testuje zależności
+    //czy się nie dublują
+    //czy nie są jakoś dziwnie określone ...
 
     //pierwszy wzorzec
     //nazwa[/nazwa]{1,}
@@ -273,31 +264,28 @@ function testDeps(deps) {
     //throw Error("TODO");
 }
 
-
 function isDepsInternal(depName) {
 
     return (getDepsInternal(depName) !== null);
 }
 
-
-//sprawdza czy zaleĹźnoĹc jest lokalna
+//sprawdza czy zależnośc jest lokalna
 function getDepsInternal(depName) {
 
-    if (depName.length >= 2 && depName.substr(0, 2) === "./") {
-        return depName.split("/");
+    if (depName.length >= 2 && depName.substr(0, 2) === './') {
+        return depName.split('/');
     }
 
-    if (depName.length >= 3 && depName.substr(0, 3) === "../") {
-        return depName.split("/");
+    if (depName.length >= 3 && depName.substr(0, 3) === '../') {
+        return depName.split('/');
     }
 
     return null;
 }
 
-
 function readContent(root, pathArr, callback) {
 
-    require("fs").readFile(root + "/" + pathArr.join("/") + ".js", function (err, data) {
+    require('fs').readFile(root + '/' + pathArr.join('/') + '.js', function(err, data) {
 
         if (err) {
             console.info(err);
@@ -308,40 +296,38 @@ function readContent(root, pathArr, callback) {
     });
 }
 
-
 /*
-    Czyta tablicÄ z zaleĹźnoĹciami z "treĹci" moduĹu
-    root - string ze ĹcieĹźkÄ do katalogu root poza ktĂłrego nie moĹźemy wyjĹÄ przy czytaniu z dysku
-    pathArr - ĹcieĹźka do tego moduĹu okreĹlona w formie niepustej tablicy
+    Czyta tablicę z zależnościami z "treści" modułu
+    root - string ze ścieżką do katalogu root poza którego nie możemy wyjść przy czytaniu z dysku
+    pathArr - ścieżka do tego modułu określona w formie niepustej tablicy
 
-    wynikowe lokalne moduĹy mogÄ siÄ zaczynaÄ tylko od "./"
+    wynikowe lokalne moduły mogą się zaczynać tylko od "./"
 */
 function readDeps(pathArr, content) {
     return resolveDeps(pathArr, getDeps(content));
 }
 
-
 function getDeps(content) {
 
-    var reg = RegExp("^define\\(\\[([^\\]]*)\\]");
+    var reg = RegExp('^define\\(\\[([^\\]]*)\\]');
 
     var match = reg.exec(content);
 
-    if (match && typeof(match[1]) === "string") {
+    if (match && typeof(match[1]) === 'string') {
 
         return getDepsList(match[1]);
 
     } else {
 
-        throw Error("The problem with regular expression matching");
+        throw Error('The problem with regular expression matching');
     }
 
     function getDepsList(str) {
 
-        var list = str.split(",");
-        var out  = [];
+        var list = str.split(',');
+        var out = [];
 
-        for (var i=0; i<list.length; i++) {
+        for (var i = 0; i < list.length; i++) {
             processItem(list[i]);
         }
 
@@ -351,7 +337,7 @@ function getDeps(content) {
 
             var trimValue = trim(listItem);
 
-            if (trimValue !== "") {
+            if (trimValue !== '') {
                 out.push(getDepName(trimValue));
             }
         }
@@ -365,14 +351,14 @@ function getDeps(content) {
 
         if (value.length > 2) {
 
-            if (testChar(value, "'") || testChar(value, '"')) {
+            if (testChar(value, '\'') || testChar(value, '"')) {
                 return value.substr(1, value.length - 2);
             } else {
-                throw Error("Invalid module name (1): " + value);
+                throw Error('Invalid module name (1): ' + value);
             }
 
         } else {
-            throw Error("Invalid module name (2):" + value);
+            throw Error('Invalid module name (2):' + value);
         }
     }
 
@@ -381,63 +367,57 @@ function getDeps(content) {
     }
 }
 
-
 function resolveDeps(pathArr, depsList) {
 
     var out = [];
 
-    for (var i=0; i<depsList.length; i++) {
+    for (var i = 0; i < depsList.length; i++) {
         out.push(resolveDepsOne(pathArr, depsList[i]));
     }
 
     return out;
 }
 
-
 function resolveDepsOne(pathArr, depName) {
 
     var depInternel = getDepsInternal(depName);
 
-    //zaleÅ¼noÅ›Ä‡ zewnÄ™trzna, zostawiamy
+    //zależność zewnętrzna, zostawiamy
     if (depInternel === null) {
         return depName;
     }
 
-
     if (pathArr.length < 1) {
-        throw Error("Expected to be non-empty Array");
+        throw Error('Expected to be non-empty Array');
     }
-
 
     var out = [];
 
     mapList(pathArr, pushItem);
-    mapList([".."], pushItem);
+    mapList(['..'], pushItem);
     mapList(depInternel, pushItem);
 
-    return "./" + out.join("/");
+    return './' + out.join('/');
 
-
-    //zrÃ³b map na liÅ›cie
+    //zrób map na liście
     function mapList(list, fnCallback) {
-        for (var i=0; i<list.length; i++) {
+        for (var i = 0; i < list.length; i++) {
             fnCallback(list[i]);
         }
     }
 
-
     function pushItem(item) {
 
-        if (item === ".") {
+        if (item === '.') {
 
             //brak modyfikacji
 
-        } else if (item === "..") {
+        } else if (item === '..') {
 
             if (out.length > 0) {
                 out.pop();
             } else {
-                throw Error("outside the main directory");
+                throw Error('outside the main directory');
             }
 
         } else {
@@ -446,19 +426,17 @@ function resolveDepsOne(pathArr, depName) {
     }
 }
 
-
 function queryCallback() {
 
-    var isExec   = false;
+    var isExec = false;
     var waitList = [];
     var argsEmit = null;
 
-
     return {
 
-        'exec'   : exec,
-        'add'    : add,
-        'isExec' : isExecFn
+        'exec': exec,
+        'add': add,
+        'isExec': isExecFn
     };
 
     function isExecFn() {
@@ -469,7 +447,7 @@ function queryCallback() {
 
         if (isExec === false) {
 
-            isExec   = true;
+            isExec = true;
             argsEmit = args;
             refreshState();
         }
@@ -492,11 +470,9 @@ function queryCallback() {
     }
 }
 
-
 function getListModules(map) {
 
-
-    var out    = [];
+    var out = [];
     var mapDep = getMapDep();
 
     var first;
@@ -525,7 +501,7 @@ function getListModules(map) {
         var mapDep = {};
         var name;
 
-        for (var i=0; i<list.length; i++) {
+        for (var i = 0; i < list.length; i++) {
 
             name = list[i];
             mapDep[name] = map[name].getDepInnerSync();
@@ -534,16 +510,14 @@ function getListModules(map) {
         return mapDep;
     }
 
-
     function removeDependence(mapDep, depName) {
 
         for (var prop in mapDep) {
-            if (typeof(mapDep[prop][depName]) !== "undefined") {
+            if (typeof(mapDep[prop][depName]) !== 'undefined') {
                 delete mapDep[prop][depName];
             }
         }
     }
-
 
     function getFirst() {
 
@@ -557,28 +531,27 @@ function getListModules(map) {
             }
         }
 
-        showLog(getRedColor("Depending looped"));
+        showLog(getRedColor('Depending looped'));
 
-        Object.keys(mapDep).forEach(function(resPath){
+        Object.keys(mapDep).forEach(function(resPath) {
 
-            showLog(getRedColor(resPath + ":"));
+            showLog(getRedColor(resPath + ':'));
 
-            Object.keys(mapDep[resPath]).forEach(function(depName){
+            Object.keys(mapDep[resPath]).forEach(function(depName) {
 
-                showLog(getRedColor("    " + depName));
+                showLog(getRedColor('    ' + depName));
             });
         });
 
-        throw Error("Depending looped");
+        throw Error('Depending looped');
     }
 }
 
+function getOutTemplate(callback) {
 
-function getOutTemplate(callback){
+    var templatePath = __dirname + '/templateOut.js';
 
-    var templatePath = __dirname + "/templateOut.js";
-
-    require("fs").readFile(templatePath, function (err, data) {
+    require('fs').readFile(templatePath, function(err, data) {
 
         if (err) {
             console.info(err);
@@ -589,67 +562,55 @@ function getOutTemplate(callback){
     });
 }
 
-
 function makeStringOut(configOutTemplate, mainModule, map, lista) {
 
-
-    var sep = "//.............................................................................";
-
+    var sep = '//.............................................................................';
 
     var out = [];
 
-
-    out.push("(function(){");
-    out.push("var repo = createRepo();");
+    out.push('(function(){');
+    out.push('var repo = createRepo();');
     out.push(sep);
 
-
-    for (var i=0; i<lista.length; i++) {
+    for (var i = 0; i < lista.length; i++) {
         out.push(getTemplateModule(lista[i]));
         out.push(sep);
     }
 
-
     out.push('repo.install("' + mainModule + '");');
     out.push(sep);
-
 
     out.push(configOutTemplate);
     out.push(sep);
 
+    out.push('}());');
 
-    out.push("}());");
-
-
-    return out.join("\n\n");
-
+    return out.join('\n\n');
 
     function getTemplateModule(moduleName) {
 
-        var moduleItem   = map[moduleName];
+        var moduleItem = map[moduleName];
 
-        var pathDir      = moduleItem.getPathDirSync();
+        var pathDir = moduleItem.getPathDirSync();
         var pathBaseName = moduleItem.getPathBasenameSync();
-        var content      = moduleItem.getContentSync();
+        var content = moduleItem.getContentSync();
 
         var out = [];
 
-        out.push("\t\t\t\t" + '//module: ' + pathDir + '/' + pathBaseName);
-        out.push("(function(define){");
+        out.push('\t\t\t\t' + '//module: ' + pathDir + '/' + pathBaseName);
+        out.push('(function(define){');
         out.push(content);
         out.push('}(repo.getDefine("' + pathDir + '", "' + pathBaseName + '")));');
 
-
-
-        showLog(getGreenColor("merge: " + pathDir + '/' + pathBaseName + ".js"));
+        showLog(getGreenColor('merge: ' + pathDir + '/' + pathBaseName + '.js'));
 
         var depsExt = moduleItem.getDepExtSync();
 
         for (var prop in depsExt) {
-            showLog(getRedColor("    block: " + prop));
+            showLog(getRedColor('    block: ' + prop));
         }
 
-        return out.join("\n");
+        return out.join('\n');
     }
 }
 

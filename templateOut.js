@@ -1,17 +1,15 @@
 function createRepo() {
 
-    var isInstall  = false;
-    //moduĹy zewnÄtrzne
+    var isInstall = false;
+    //moduły zewnętrzne
     var modulesExt = createModulesExt();
-    //moduĹy lokalne
-    var modules    = {};
-
+    //moduły lokalne
+    var modules = {};
 
     return {
-        getDefine : getDefine,
-        install   : install
+        getDefine: getDefine,
+        install: install
     };
-
 
     function getDefine(path, name) {
 
@@ -19,11 +17,11 @@ function createRepo() {
 
             if (isInstall === false) {
 
-                modules[path + "/" + name] = createEvalModule(path, deps, def);
+                modules[path + '/' + name] = createEvalModule(path, deps, def);
 
             } else {
 
-                throw Error("You cannot define module after configuration process");
+                throw Error('You cannot define module after configuration process');
             }
         };
     }
@@ -35,7 +33,7 @@ function createRepo() {
         addToExt(deps);
 
         return {
-            "get" : get
+            'get': get
         };
 
         function get(extModuleObj) {
@@ -51,12 +49,11 @@ function createRepo() {
 
             var depsResolve = [];
 
-            for (var i=0; i<deps.length; i++) {
+            for (var i = 0; i < deps.length; i++) {
                 depsResolve.push(resolve(deps[i]));
             }
 
             return def.apply(null, depsResolve);
-
 
             function resolve(moduleName) {
 
@@ -75,38 +72,37 @@ function createRepo() {
                 if (moduleName in extModuleObj) {
                     return extModuleObj[moduleName];
                 } else {
-                    throw Error("There is no definition for external module: " + moduleName);
+                    throw Error('There is no definition for external module: ' + moduleName);
                 }
             }
 
             function getLocal(moduleName) {
 
-                var modulePath = path + "/" + moduleName;
+                var modulePath = path + '/' + moduleName;
                 var out;
 
                 var modulePathNormalize = normalizePath(modulePath);
 
-                if (typeof(modulePathNormalize) === "string" && modulePathNormalize !== "") {
+                if (typeof(modulePathNormalize) === 'string' && modulePathNormalize !== '') {
 
                     out = getFromModules(modulePathNormalize);
 
                     if (out !== null) {
                         return out;
                     } else {
-                        throw Error("There is no definition for module: " + modulePathNormalize);
+                        throw Error('There is no definition for module: ' + modulePathNormalize);
                     }
 
                 } else {
 
-                    throw Error("There is a problem with path normalization: " + modulePath);
+                    throw Error('There is a problem with path normalization: ' + modulePath);
                 }
-
 
                 function getFromModules(moduleFullName) {
 
                     var value = modules[moduleFullName];
 
-                    if (typeof(value) !== "undefined") {
+                    if (typeof(value) !== 'undefined') {
                         return value.get(extModuleObj);
                     } else {
                         return null;
@@ -116,18 +112,17 @@ function createRepo() {
         }
     }
 
-
     function normalizePath(path) {
 
-        var chunks = path.split("/");
+        var chunks = path.split('/');
 
         var newChunks = [];
 
-        for (var i=0; i<chunks.length; i++) {
+        for (var i = 0; i < chunks.length; i++) {
 
             var value = chunks[i];
 
-            if (value === ".") {
+            if (value === '.') {
 
                 if (newChunks.length === 0) {
 
@@ -138,7 +133,7 @@ function createRepo() {
                     //ignoruj znak
                 }
 
-            } else if (value === "..") {
+            } else if (value === '..') {
 
                 if (newChunks.length >= 2) {
 
@@ -146,7 +141,7 @@ function createRepo() {
 
                 } else {
 
-                    return null
+                    return null;
                 }
 
             } else {
@@ -155,12 +150,12 @@ function createRepo() {
             }
         }
 
-        return newChunks.join("/");
+        return newChunks.join('/');
     }
 
     function addToExt(deps) {
 
-        for (var i=0; i<deps.length; i++) {
+        for (var i = 0; i < deps.length; i++) {
             add(deps[i]);
         }
 
@@ -177,11 +172,11 @@ function createRepo() {
 
     function isModuleLocal(moduleName) {
 
-        if (typeof(moduleName) === "string") {
+        if (typeof(moduleName) === 'string') {
 
-            if (moduleName.length >= 2 && moduleName.substr(0, 2) === "./") {
+            if (moduleName.length >= 2 && moduleName.substr(0, 2) === './') {
                 return true;
-            } else if (moduleName.length >= 3 && moduleName.substr(0, 3) === "../") {
+            } else if (moduleName.length >= 3 && moduleName.substr(0, 3) === '../') {
                 return true;
             } else {
                 return false;
@@ -189,57 +184,55 @@ function createRepo() {
 
         } else {
 
-            throw Error("Module name should be string");
+            throw Error('Module name should be string');
         }
     }
 
     function getModule(name, extModuleObj) {
 
-        if (typeof(modules[name]) !== "undefined") {
+        if (typeof(modules[name]) !== 'undefined') {
             return modules[name].get(extModuleObj);
         } else {
-            throw Error("Module not defined: " + name);
+            throw Error('Module not defined: ' + name);
         }
     }
 
-
-    //instalowanie zewnÄtrznej koĹcĂłwki odnoszÄcej siÄ do requirejs (ktĂłra pobierze zewnÄtrzne moduĹy)
+    //instalowanie zewnętrznej końcówki odnoszącej się do requirejs (która pobierze zewnętrzne moduły)
     function install(mainModule) {
 
         if (isInstall === false) {
 
             isInstall = true;
 
-            define(modulesExt.getModulesName(), function(){
+            define(modulesExt.getModulesName(), function() {
 
-                //konwersja "arguments" na tablicÄ
+                //konwersja "arguments" na tablicę
                 var copyParams = Array.prototype.slice.call(arguments, 0);
 
                 //potrzebne do evaluowania ...
                 var moduleObj = modulesExt.getExtendsModulesObject(copyParams);
 
-                //ewaluowanie gĹĂłwnego moduĹu - z podmoduĹami jeĹli trzeba
+                //ewaluowanie głównego modułu - z podmodułami jeśli trzeba
                 return getModule(mainModule, moduleObj);
             });
 
         } else {
 
-            throw Error("Unsupported state");
+            throw Error('Unsupported state');
         }
     }
 
-
     function createModulesExt() {
 
-        var isSet           = false;
+        var isSet = false;
 
-        var modulesName     = [];
+        var modulesName = [];
         var modulesExtValue = {};
 
         return {
-            "addName"                 : addName,
-            "getExtendsModulesObject" : getExtendsModulesObject,
-            "getModulesName"          : getModulesName
+            'addName': addName,
+            'getExtendsModulesObject': getExtendsModulesObject,
+            'getModulesName': getModulesName
         };
 
         function getExtendsModulesObject(modules) {
@@ -250,14 +243,14 @@ function createRepo() {
 
             } else {
 
-                throw Error("Unsupported state");
+                throw Error('Unsupported state');
             }
 
             function getObj() {
 
                 var out = {};
 
-                for (var i=0; i<modulesName.length; i++) {
+                for (var i = 0; i < modulesName.length; i++) {
                     setOut(modulesName[i], modules[i]);
                 }
 
@@ -280,7 +273,7 @@ function createRepo() {
 
                 if (isNoEmptyString(name)) {
 
-                    if (typeof(modulesExtValue[name]) !== "string") {
+                    if (typeof(modulesExtValue[name]) !== 'string') {
 
                         modulesExtValue[name] = name;
                         modulesName.push(name);
@@ -288,18 +281,18 @@ function createRepo() {
 
                 } else {
 
-                    throw Error("Unsupported parameter type");
+                    throw Error('Unsupported parameter type');
                 }
 
             } else {
 
-                throw Error("Unsupported state");
+                throw Error('Unsupported state');
             }
         }
     }
 
     function isNoEmptyString(value) {
 
-        return (typeof(value) === "string" && value !== "");
+        return (typeof(value) === 'string' && value !== '');
     }
 }
