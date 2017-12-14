@@ -26,11 +26,10 @@ function processFile(file_in, callback) {
 }
 
 function proccesStream(fileStream, encode, callback) {
-    // fileStream.contents.toString()
-    console.log(fileStream.contents.toString());
-    // callback(null,'test');
-    callback(null, fileStream);
-
+    processFile(fileStream.history[0], function(content) {
+        fileStream.contents = new Buffer(content);
+        callback(null, fileStream);
+    })
 }
 
 function gulpTask() {
