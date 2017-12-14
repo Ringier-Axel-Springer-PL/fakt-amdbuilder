@@ -29,7 +29,7 @@ function proccesStream(fileStream, encode, callback) {
     processFile(fileStream.history[0], function(content) {
         fileStream.contents = new Buffer(content);
         callback(null, fileStream);
-    })
+    });
 }
 
 function gulpTask() {
