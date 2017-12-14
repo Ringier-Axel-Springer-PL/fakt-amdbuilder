@@ -1,6 +1,6 @@
 {
   "name": "AMDBuilder",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "main": "AMDBuilder.js",
   "scripts": {
@@ -14,8 +14,8 @@
     "name": "Grzesiu Szeliga"
   },
   "license": "ISC",
-  "dependencies": {},
-  "devDependencies": {
+  "dependencies": {
     "through2": "^2.0.3"
-  }
+  },
+  "devDependencies": {}
 }
